@@ -1,0 +1,17 @@
+ORIGINAL - CONSIGNOR COPY
+LR No. : LR-001
+Date : 2026-08-17
+Consignor : Alpha Industries
+Consignee : Beta Corp
+From : Mumbai
+To : Pune
+Vehicle No. : MH20GC-9895
+WEIGHT
+Actual (Kg) : 42
+Charged (Kg) : 45
+FREIGHT DETAILS
+Freight Amount : 5000
+Loading Charges : 200
+Unloading Charges : 150
+GST (5%) : 250
+Total Amount : 5600
