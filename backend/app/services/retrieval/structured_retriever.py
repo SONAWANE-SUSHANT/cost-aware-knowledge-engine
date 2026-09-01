@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.models.knowledge import Document, KnowledgeFact
 from app.services.retrieval.models import RetrievalResult
+from app.utils.tokenize import content_tokens
 
 
 def retrieve_structured_facts(
@@ -26,9 +27,14 @@ def retrieve_structured_facts(
       - field name contains query tokens
       - value contains query tokens
       - exact field:value matches
+
+    Only content words drive the ILIKE matching/scoring below -- common
+    function words ("in", "is", "the"...) are filtered out first, since
+    matching on them as a bare substring turns up unrelated rows purely
+    by coincidence (e.g. "in" matching "Industries").
     """
     normalized = query.strip().lower()
-    tokens = [t for t in normalized.split() if t]
+    tokens = content_tokens(query, min_len=3)
 
     if not tokens:
         return []

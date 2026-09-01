@@ -23,6 +23,7 @@ from app.services.retrieval.lexical_retriever import retrieve_lexical_chunks
 from app.services.retrieval.models import RetrievalResponse, RetrievalResult
 from app.services.retrieval.semantic_retriever import retrieve_semantic_chunks
 from app.services.retrieval.structured_retriever import retrieve_structured_facts
+from app.utils.tokenize import content_tokens, normalize_token
 
 
 @dataclass
@@ -109,11 +110,17 @@ def retrieve(
         )
         result.retrieval_method = "hybrid"
 
-    # Add a bonus for exact identifier matches (e.g., "MH20GC-9895")
+    # Add a bonus for exact identifier matches (e.g., "MH20GC-9895").
     # This is a deterministic metadata-relevance boost, not LLM-based.
+    # A minimum content-token overlap is required first (see
+    # _has_min_content_overlap) so a weak, coincidental match can't be
+    # promoted into a confident-looking top result on its own.
+    query_tokens = content_tokens(query, min_len=3)
+
     for result in deduplicated:
         if _is_exact_identifier_match(query, result):
             result.score += 0.2
+        result.score += _document_relevance_bonus(query_tokens, result)
 
     # Sort by final score, stable tiebreak by source type
     deduplicated.sort(
@@ -121,13 +128,59 @@ def retrieve(
         reverse=True,
     )
 
+    # --- Minimum relevance floor ---
+    # Drop results that neither scored meaningfully nor share any real
+    # content word with the query. Without this, a near-zero hybrid
+    # score (e.g. from a single coincidental substring match) can still
+    # surface as "evidence" and get treated as a confident deterministic
+    # answer downstream.
+    filtered = [
+        result
+        for result in deduplicated
+        if _passes_relevance_floor(result, query_tokens)
+    ]
+
     # --- Evidence Set ---
-    results = deduplicated[:top_k]
+    results = filtered[:top_k]
     return RetrievalResponse(
         query=query,
         top_k=top_k,
         results=results,
         total_results=len(results),
+    )
+
+
+_MIN_HYBRID_SCORE = 0.05
+
+
+def _passes_relevance_floor(
+    result: RetrievalResult,
+    query_tokens: list[str],
+) -> bool:
+    """
+    A result must clear a small hybrid-score floor OR share at least
+    one real content word with the query (checked against field, value,
+    and text). This keeps genuinely relevant low-score results (e.g. a
+    correct but sparsely-worded chunk) while dropping noise that only
+    matched by coincidence.
+    """
+
+    if result.score >= _MIN_HYBRID_SCORE:
+        return True
+
+    if not query_tokens:
+        return False
+
+    haystacks = [
+        (result.field or "").lower(),
+        (result.value or "").lower(),
+        (result.text or "").lower(),
+    ]
+
+    return any(
+        token in haystack
+        for token in query_tokens
+        for haystack in haystacks
     )
 
 
@@ -194,10 +247,18 @@ def _deduplicate(
 
 
 def _is_exact_identifier_match(query: str, result: RetrievalResult) -> bool:
-    """Detect whether the query closely matches a specific value or field."""
-    query_norm = query.strip().lower()
-    value_norm = (result.value or "").strip().lower()
-    field_norm = (result.field or "").strip().lower()
+    """
+    Detect whether the query closely matches a specific value or field.
+
+    Uses the same normalization as content_tokens() (lowercased, trimmed
+    punctuation) so this shares one notion of "matches" with the rest of
+    the retrieval layer instead of comparing raw strings on its own path.
+    Still requires equality, not substring containment, so this stays a
+    strict, low-risk exact-match bonus.
+    """
+    query_norm = normalize_token(query.strip())
+    value_norm = normalize_token((result.value or "").strip())
+    field_norm = normalize_token((result.field or "").strip())
 
     # Exact value match (e.g., a vehicle number, invoice number)
     if value_norm and query_norm == value_norm:
@@ -208,3 +269,33 @@ def _is_exact_identifier_match(query: str, result: RetrievalResult) -> bool:
         return True
 
     return False
+
+
+def _document_relevance_bonus(
+    query_tokens: list[str],
+    result: RetrievalResult,
+) -> float:
+    """
+    Small bonus when the result's own document name shares a content
+    word with the query (e.g. query mentions "logistics" and the result
+    comes from "Matoshree_Logistics.pdf"). This is a coherence signal,
+    not a correctness guarantee -- it nudges ranking toward the document
+    the query is actually about when the knowledge base spans several
+    unrelated documents, without excluding anything outright.
+    """
+
+    if not query_tokens or not result.document_name:
+        return 0.0
+
+    doc_name_norm = result.document_name.lower()
+
+    matches = sum(
+        1
+        for token in query_tokens
+        if token in doc_name_norm
+    )
+
+    if matches == 0:
+        return 0.0
+
+    return min(0.05, 0.02 * matches)

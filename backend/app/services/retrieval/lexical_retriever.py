@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from app.models.knowledge import Document, DocumentChunk
 from app.services.retrieval.models import RetrievalResult
+from app.utils.tokenize import content_tokens
 
 
 def retrieve_lexical_chunks(
@@ -29,6 +30,11 @@ def retrieve_lexical_chunks(
       - exact phrase matching (quoted tokens in query)
       - token-level matching (unquoted words)
       - case-insensitive matching
+
+    Only content words are used for the unquoted token-level matching
+    below -- common function words are filtered out first, since a word
+    like "the" appears in nearly every chunk and would otherwise inflate
+    scores for chunks that have nothing to do with the query.
     """
     normalized = query.strip().lower()
 
@@ -37,9 +43,9 @@ def retrieve_lexical_chunks(
 
     # Parse query into exact phrases and individual tokens
     exact_phrases = re.findall(r'"([^"]+)"', normalized)
-    # Remove quoted phrases and split remaining into tokens
+    # Remove quoted phrases and split remaining into content-word tokens
     remaining = re.sub(r'"[^"]+"', "", normalized).strip()
-    tokens = [t for t in remaining.split() if t]
+    tokens = content_tokens(remaining, min_len=3)
 
     # Build filters
     filters = []
