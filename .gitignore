@@ -1,2 +1,26 @@
+# Environment & Secrets
 .env
 .env.example
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Databases
+backend/*.db
+*.sqlite3
+
+# Node / Frontend Build & Deps
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# Uploaded User Documents in Raw Folder
+documents/raw/365*.pdf
+
+# OS Artifacts
+.DS_Store
+Thumbs.db
