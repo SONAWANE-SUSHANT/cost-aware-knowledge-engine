@@ -9,7 +9,7 @@
 An **enterprise retrieval-first document intelligence platform** engineered to minimize LLM inference costs. By combining **deterministic key-value extraction**, **dual-strategy chunking**, **hybrid BM25/vector search**, and an **in-memory LRU query cache**, the engine resolves high-frequency document questions with **zero LLM cost** and sub-15ms latency, reserving generative LLM calls strictly as a fallback.
 
 <p align="center">
-  <img src="docs/images/query-studio-dashboard.png" alt="Cost-Aware Knowledge Engine Interface" width="100%" />
+  <img src="docs/images/query-studio.png" alt="Query Studio Interface" width="100%" />
 </p>
 
 ---
@@ -46,31 +46,31 @@ An **enterprise retrieval-first document intelligence platform** engineered to m
 
 ## 🖼️ User Interface & Platform Walkthrough
 
-### 1. Intelligence Query Studio
-Interactive question-answering console with dynamic execution pipeline routing, grounded confidence meters, telemetry metrics, and citations explorer.
+### 1. Query Studio
+Interactive question-answering console with sample prompt suggestions, execution pipeline routing, and citation controls.
 
-![Intelligence Query Studio](docs/images/query-studio-dashboard.png)
-
----
-
-### 2. Cost & Telemetry Analytics
-Real-time cost ledger, query cost progression area charts, extraction method breakdown (deterministic vs. LLM fallback), and savings KPI metrics.
-
-![Cost & Telemetry Analytics](docs/images/cost-analytics-dashboard.png)
+![Query Studio](docs/images/query-studio.png)
 
 ---
 
-### 3. Document Hub & Ingestion Engine
-Multi-format drag-and-drop file uploader (PDF, DOCX, PPTX, TXT), document status tracking, and chunk/structured fact inspection.
+### 2. Result with Citation and Evidence
+Grounded answer extraction displaying the resolution method, grounding confidence meter, query execution latency, token counts, and source citations with relevance scores.
 
-![Document Hub Catalog](docs/images/document-hub-catalog.png)
+![Result with Citation and Evidence](docs/images/result-with-citation-and-evidence.png)
 
 ---
 
-### 4. Hybrid Retrieval Lab
-Deep diagnostic sandbox for inspecting raw lexical BM25 and vector cosine similarity scores without invoking generative LLMs.
+### 3. Analytics (Cost & Telemetry Dashboard)
+Real-time cost telemetry, cumulative query savings KPI cards, query cost progression area charts, extraction method breakdown, and audit ledger.
 
-![Hybrid Retrieval Lab](docs/images/hybrid-retrieval-lab.png)
+![Analytics](docs/images/analytics.png)
+
+---
+
+### 4. Document Hub
+Multi-format drag-and-drop document uploader supporting PDF, DOCX, PPTX, and TXT, page-level status, chunk inspection, and cascaded deletion.
+
+![Document Hub](docs/images/document-hub.png)
 
 ---
 
