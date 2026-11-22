@@ -8,6 +8,10 @@
 
 An **enterprise retrieval-first document intelligence platform** engineered to minimize LLM inference costs. By combining **deterministic key-value extraction**, **dual-strategy chunking**, **hybrid BM25/vector search**, and an **in-memory LRU query cache**, the engine resolves high-frequency document questions with **zero LLM cost** and sub-15ms latency, reserving generative LLM calls strictly as a fallback.
 
+<p align="center">
+  <img src="docs/images/query-studio-dashboard.png" alt="Cost-Aware Knowledge Engine Interface" width="100%" />
+</p>
+
 ---
 
 ## 📚 Documentation Quick Links
@@ -37,6 +41,36 @@ An **enterprise retrieval-first document intelligence platform** engineered to m
   - **Cost Telemetry Dashboard:** Real-time spend tracking, token usage economics, query duration latency, and counterfactual LLM savings analytics.
   - **Search Lab:** Deep search inspector to analyze raw BM25 lexical scores, vector cosine similarities, and chunk strategies.
 - **Dual Database Flexibility:** Runs out-of-the-box on local **SQLite** (zero external dependencies) or scales to **PostgreSQL with pgvector**.
+
+---
+
+## 🖼️ User Interface & Platform Walkthrough
+
+### 1. Intelligence Query Studio
+Interactive question-answering console with dynamic execution pipeline routing, grounded confidence meters, telemetry metrics, and citations explorer.
+
+![Intelligence Query Studio](docs/images/query-studio-dashboard.png)
+
+---
+
+### 2. Cost & Telemetry Analytics
+Real-time cost ledger, query cost progression area charts, extraction method breakdown (deterministic vs. LLM fallback), and savings KPI metrics.
+
+![Cost & Telemetry Analytics](docs/images/cost-analytics-dashboard.png)
+
+---
+
+### 3. Document Hub & Ingestion Engine
+Multi-format drag-and-drop file uploader (PDF, DOCX, PPTX, TXT), document status tracking, and chunk/structured fact inspection.
+
+![Document Hub Catalog](docs/images/document-hub-catalog.png)
+
+---
+
+### 4. Hybrid Retrieval Lab
+Deep diagnostic sandbox for inspecting raw lexical BM25 and vector cosine similarity scores without invoking generative LLMs.
+
+![Hybrid Retrieval Lab](docs/images/hybrid-retrieval-lab.png)
 
 ---
 
