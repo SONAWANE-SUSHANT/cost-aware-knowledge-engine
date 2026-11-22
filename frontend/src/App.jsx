@@ -139,7 +139,7 @@ function App() {
       addToast(
         data.llm_used
           ? "Answered using LLM fallback provider"
-          : "Answered with $0 deterministic extraction!",
+          : "Answered with deterministic extraction!",
         "success"
       );
 

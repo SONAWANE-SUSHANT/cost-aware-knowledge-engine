@@ -4,31 +4,21 @@ import {
   BarChart3,
   FolderArchive,
   Search,
-  Zap,
-  Activity,
-  DollarSign
+  Zap
 } from "lucide-react";
 
-function Navbar({ activeTab, setActiveTab, isOnline, totalSpend = 0, modelName = "openai/gpt-4o-mini" }) {
-  const formatCost = (val) => {
-    const num = Number(val || 0);
-    return `$${num.toFixed(6)}`;
-  };
-
+function Navbar({ activeTab, setActiveTab, isOnline }) {
   return (
     <header className="navbar">
       <div className="navbar-inner">
         {/* Brand section */}
         <div className="brand-section">
           <div className="brand-icon-wrapper">
-            <BrainCircuit size={22} />
+            <BrainCircuit size={22} className="brand-icon" />
           </div>
           <div className="brand-info">
-            <h1>
-              KnowledgeEngine
-              <span className="brand-badge">Cost-Aware</span>
-            </h1>
-            <p>Hybrid Retrieval & Intelligent Extraction</p>
+            <h1>KnowledgeEngine</h1>
+            <p>Cost-Aware Hybrid Retrieval & Grounded Intelligence</p>
           </div>
         </div>
 
@@ -40,7 +30,7 @@ function Navbar({ activeTab, setActiveTab, isOnline, totalSpend = 0, modelName =
             onClick={() => setActiveTab("studio")}
           >
             <Zap size={16} />
-            <span>Intelligence Studio</span>
+            <span>Query Studio</span>
           </button>
 
           <button
@@ -73,22 +63,16 @@ function Navbar({ activeTab, setActiveTab, isOnline, totalSpend = 0, modelName =
 
         {/* Status & Live Telemetry */}
         <div className="nav-telemetry">
-          <div className="model-pill" title="Active configured LLM fallback model">
-            <Zap size={12} />
-            <span>{modelName.replace("openai/", "")}</span>
-          </div>
-
-          <div className="cost-ticker" title="Cumulative estimated engine spend">
-            <DollarSign size={13} />
-            <span>{formatCost(totalSpend)}</span>
-          </div>
-
+          {/* Engine Status indicator */}
           <div className="status-indicator">
-            <span
-              className={`status-dot ${isOnline ? "" : "disconnected"}`}
-              title={isOnline ? "Engine API Connected" : "Engine API Offline"}
-            />
-            <span>{isOnline ? "Live" : "Offline"}</span>
+            <div className="status-dot-wrapper">
+              <span
+                className={`status-dot ${isOnline ? "" : "disconnected"}`}
+                title={isOnline ? "Knowledge Engine Online" : "Engine Backend Offline"}
+              />
+              {isOnline && <span className="status-dot-pulse" />}
+            </div>
+            <span className="status-label">{isOnline ? "Engine Ready" : "Offline"}</span>
           </div>
         </div>
       </div>

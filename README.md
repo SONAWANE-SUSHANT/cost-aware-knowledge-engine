@@ -26,7 +26,8 @@ An **enterprise retrieval-first document intelligence platform** engineered to m
   - **Tier 1 (Deterministic Extraction):** Structured entity and fact extraction (< 15ms, $0.00 spend).
   - **Tier 2 (Hybrid Retrieval):** Lexical BM25 + vector similarity ranking (< 40ms, amortized $0.000001 spend).
   - **Tier 3 (LLM Fallback):** OpenRouter generative model invoked only when retrieval confidence is below threshold (< 0.3).
-- **Dual Chunking & Extraction Engine:**
+- **Dual Chunking & Dense Embedding Engine:**
+  - **Dense Semantic Embeddings:** State-of-the-art dense vector representation via `BAAI/bge-small-en-v1.5` (384-dimensional L2-normalized embeddings via `sentence-transformers`) with lazy singleton lifecycle management for sub-second retrieval.
   - **Sliding-Window Chunking:** Fixed-token windows with configurable overlap to preserve contextual continuity.
   - **Semantic Chunking:** Boundary-aware chunking respecting headings, paragraphs, and logical sections.
   - **Fact Extraction:** Automated key-value pair and structured table recognition.
@@ -100,9 +101,9 @@ Copy-Item backend\.env.example backend\.env
 | :--- | :--- | :--- |
 | `DATABASE_URL` | `sqlite:///./cost_aware_knowledge_engine.db` | Database connection string (SQLite or PostgreSQL). |
 | `ENABLE_PGVECTOR` | `false` | Enable native pgvector storage in PostgreSQL. |
-| `EMBEDDING_PROVIDER` | `deterministic` | Provider (`deterministic` for fast local dev, or real vector models). |
-| `EMBEDDING_MODEL` | `deterministic-hash-v1` | Embedding model identifier. |
-| `EMBEDDING_DIMENSIONS` | `384` | Dimensionality of embedding vectors. |
+| `EMBEDDING_PROVIDER` | `bge` | Dense embedding provider (`bge` using `BAAI/bge-small-en-v1.5`). |
+| `EMBEDDING_MODEL` | `BAAI/bge-small-en-v1.5` | Pretrained sentence transformer model identifier. |
+| `EMBEDDING_DIMENSIONS` | `384` | Dimensionality of BGE embedding vectors. |
 | `OPENROUTER_API_KEY` | `""` | Optional OpenRouter API key for Tier 3 LLM fallback. |
 | `OPENROUTER_MODEL` | `google/gemini-2.5-flash` | Fallback LLM model on OpenRouter. |
 | `RETRIEVAL_COST_PER_QUERY` | `0.000001` | Base amortized query compute cost. |

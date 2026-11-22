@@ -1,12 +1,12 @@
 from app.services.embeddings.provider import (
-    DeterministicEmbeddingProvider,
+    BGEEmbeddingProvider,
     EmbeddingProvider,
     get_embedding_provider,
 )
 
 
 __all__ = [
-    "DeterministicEmbeddingProvider",
+    "BGEEmbeddingProvider",
     "EmbeddingProvider",
     "get_embedding_provider",
 ]

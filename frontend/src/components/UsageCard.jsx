@@ -36,7 +36,7 @@ function UsageCard({ usage = {} }) {
           <span>Estimated Cost</span>
 
           <strong>
-            ${usage.estimated_cost ?? 0}
+            {usage.estimated_cost ?? 0}
           </strong>
         </div>
 

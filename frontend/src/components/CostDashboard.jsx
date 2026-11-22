@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  DollarSign,
   TrendingDown,
   Cpu,
   Database,
@@ -87,11 +86,11 @@ function CostDashboard({ costData, onResetCosts }) {
           <div className="kpi-top">
             <span className="kpi-title">Total Spend</span>
             <div className="kpi-icon-circle" style={{ background: "rgba(16, 185, 129, 0.15)", color: "#10b981" }}>
-              <DollarSign size={18} />
+              <Activity size={18} />
             </div>
           </div>
           <div className="kpi-val" style={{ color: "#34d399" }}>
-            ${Number(totalCost).toFixed(6)}
+            {Number(totalCost).toFixed(6)}
           </div>
           <p className="kpi-subtitle">Actual expenditure across all retrieval & LLM calls</p>
         </div>
@@ -105,7 +104,7 @@ function CostDashboard({ costData, onResetCosts }) {
             </div>
           </div>
           <div className="kpi-val" style={{ color: "#818cf8" }}>
-            ${Number(estimatedSavings).toFixed(4)}
+            {Number(estimatedSavings).toFixed(4)}
           </div>
           <p className="kpi-subtitle">
             <strong style={{ color: "#34d399" }}>{savingsPct}% saved</strong> vs brute-force LLM routing
@@ -138,7 +137,7 @@ function CostDashboard({ costData, onResetCosts }) {
           </div>
           <div className="kpi-val">{totalQueries}</div>
           <p className="kpi-subtitle">
-            Avg query cost: ${Number(stats.average_cost || 0).toFixed(6)}
+            Avg query cost: {Number(stats.average_cost || 0).toFixed(6)}
           </p>
         </div>
       </div>
@@ -150,7 +149,7 @@ function CostDashboard({ costData, onResetCosts }) {
           <div className="card-title-group">
             <h3>
               <BarChart3 size={18} color="#818cf8" />
-              <span>Query Cost Progression ($)</span>
+              <span>Query Cost Progression</span>
             </h3>
             <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Recent executions</span>
           </div>
@@ -166,7 +165,7 @@ function CostDashboard({ costData, onResetCosts }) {
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="name" stroke="#475569" fontSize={12} tickLine={false} />
-                  <YAxis stroke="#475569" fontSize={12} tickLine={false} tickFormatter={(v) => `$${v}`} />
+                  <YAxis stroke="#475569" fontSize={12} tickLine={false} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "#111827",
@@ -178,7 +177,7 @@ function CostDashboard({ costData, onResetCosts }) {
                   <Area
                     type="monotone"
                     dataKey="cost"
-                    name="Cost ($)"
+                    name="Cost"
                     stroke="#818cf8"
                     strokeWidth={2}
                     fillOpacity={1}
@@ -263,7 +262,7 @@ function CostDashboard({ costData, onResetCosts }) {
               className="filter-select"
             >
               <option value="all">All Queries</option>
-              <option value="deterministic">Deterministic ($0 LLM)</option>
+              <option value="deterministic">Deterministic (No LLM)</option>
               <option value="llm">LLM Invocations</option>
             </select>
 
@@ -310,7 +309,7 @@ function CostDashboard({ costData, onResetCosts }) {
                     </td>
                     <td>
                       <span style={{ color: item.llm_used ? "#fb7185" : "#34d399", fontWeight: 600 }}>
-                        {item.llm_used ? "Yes" : "No ($0)"}
+                        {item.llm_used ? "Yes" : "No"}
                       </span>
                     </td>
                     <td>
@@ -325,7 +324,7 @@ function CostDashboard({ costData, onResetCosts }) {
                     </td>
                     <td>
                       <strong style={{ color: "#34d399", fontFamily: "var(--font-mono)" }}>
-                        ${Number(item.total_cost || 0).toFixed(6)}
+                        {Number(item.total_cost || 0).toFixed(6)}
                       </strong>
                     </td>
                   </tr>

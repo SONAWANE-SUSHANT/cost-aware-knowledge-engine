@@ -99,7 +99,7 @@ Tier 0: Query Normalizer & Memory Cache   [$0.000000 | < 2ms]
 
 1. **Tier 0 (Cache):** Query strings are normalized (case folding, punctuation trimming, whitespace collapsing) and checked against an in-memory LRU cache.
 2. **Tier 1 (Deterministic Extraction):** The [`AnswerExtractor`](file:///c:/Users/91876/cost-aware-knowledge-engine/backend/app/services/answering/answer_extractor.py) queries structured key-value entities in the `knowledge_facts` table (e.g., invoice numbers, dates, monetary totals, customer names). If an exact match is found with high confidence (>= 0.8), the answer is returned with zero LLM inference cost.
-3. **Tier 2 (Hybrid Retrieval):** Searches both structured facts, full-text chunks (BM25 lexical scoring), and vector embeddings (cosine similarity). Results are deduplicated and reranked using calibrated score normalization.
+3. **Tier 2 (Hybrid Retrieval):** Searches structured facts, full-text chunks (BM25 lexical scoring), and dense vector embeddings (cosine similarity with `BAAI/bge-small-en-v1.5` via `BGEEmbeddingProvider`). Results are deduplicated and reranked using calibrated score normalization.
 4. **Tier 3 (Constrained LLM Fallback):** When deterministic extraction fails or confidence is below threshold (< 0.3), the system constructs a minimal context window from the top retrieved chunks and invokes an OpenRouter-hosted LLM (e.g., `google/gemini-2.5-flash` or `openai/gpt-4o-mini`).
 
 ---
@@ -173,7 +173,7 @@ erDiagram
 #### Idempotency & Stability Guarantees
 - **Documents:** Checksummed using SHA-256 of the extracted page text. Uploading an identical document triggers deduplication.
 - **Chunks:** Assigned deterministic IDs derived from `document_checksum + chunking_strategy + page_number + index + text_hash`.
-- **Embeddings:** Unique constraint on `(chunk_id, provider, model)` prevents redundant vector calculations.
+- **Embeddings:** Unique constraint on `(chunk_id, provider, model)` prevents redundant vector calculations. Powered by `BAAI/bge-small-en-v1.5` dense sentence transformers (384 dimensions, normalized).
 - **Cascaded Integrity:** Explicit foreign-key cascaded cleanup guarantees that deleting a document purges all child pages, chunks, facts, tables, and embeddings without leaving orphaned records.
 
 ---
