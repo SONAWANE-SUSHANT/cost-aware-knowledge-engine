@@ -82,7 +82,7 @@ flowchart TD
 
     %% Tier 1: Deterministic Fact Extraction
     CacheCheck -- "Cache Miss" --> AnalyzeRoute["Analyze Query Intent & Route<br/>(Lookup, Factoid, Search, Summary)"]
-    AnalyzeRoute --> Retrieve["Execute Hybrid Retrieval<br/>1. Exact Fact Search (knowledge_facts)<br/>2. Lexical BM25 (document_chunks)<br/>3. Vector Cosine Similarity (embeddings)"]
+    AnalyzeRoute --> Retrieve["Execute Hybrid Retrieval<br/>1. Exact Fact Search (knowledge_facts)<br/>2. Lexical BM25 (document_chunks)<br/>3. Vector Cosine Similarity (BGE-small-en-v1.5 embeddings)"]
     
     Retrieve --> Deterministic{"Exact Fact Match<br/>Confidence >= 0.8?"}
     Deterministic -- "Yes (Tier 1)" --> ExtractFact["Extract Structured Fact Answer<br/>Latency: < 15ms | Cost: $0.000000"]
@@ -115,7 +115,7 @@ flowchart TD
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Tier 0** | **Normalized Cache** | Identical normalized query previously answered | `< 2 ms` | **$0.000000** | $100\%$ deterministic |
 | **Tier 1** | **Structured Fact Extractor** | Exact field match in `knowledge_facts` with confidence $\ge 0.8$ | `< 15 ms` | **$0.000000** | Exact grounded extraction |
-| **Tier 2** | **Hybrid Lexical & Semantic** | BM25 match or vector cosine similarity chunk score $\ge 0.3$ | `< 40 ms` | **$0.000001** | High recall, zero hallucinations |
+| **Tier 2** | **Hybrid Lexical & Semantic** | BM25 match or BGE vector cosine similarity chunk score $\ge 0.3$ | `< 40 ms` | **$0.000001** | High recall, zero hallucinations |
 | **Tier 3** | **Constrained LLM Fallback** | Extraction confidence $< 0.3$ and `llm_allowed = true` | `~600 ms` | **~$0.002000** | Generative synthesis from top chunks |
 
 ---

@@ -18,11 +18,11 @@ class Settings:
     )
     embedding_provider = os.getenv(
         "EMBEDDING_PROVIDER",
-        "deterministic"
+        "bge"
     )
     embedding_model = os.getenv(
         "EMBEDDING_MODEL",
-        "deterministic-hash-v1"
+        "BAAI/bge-small-en-v1.5"
     )
     embedding_dimensions = int(
         os.getenv("EMBEDDING_DIMENSIONS", "384")

@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
-from hashlib import sha256
-import math
+import logging
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class EmbeddingProvider(ABC):
@@ -21,50 +22,69 @@ class EmbeddingProvider(ABC):
         ]
 
 
-class DeterministicEmbeddingProvider(EmbeddingProvider):
+class BGEEmbeddingProvider(EmbeddingProvider):
     """
-    Local provider for tests and development.
+    Semantic embedding provider using BAAI/bge-small-en-v1.5.
 
-    It is deterministic and dependency-free, but not semantically meaningful.
-    Replace it with a real provider for production retrieval quality.
+    Produces 384-dimensional dense vectors via sentence-transformers.
+    The model is loaded once and reused across calls.
     """
 
-    name = "deterministic"
+    name = "bge"
 
     def __init__(
         self,
-        model="deterministic-hash-v1",
-        dimensions=384,
+        model_name="BAAI/bge-small-en-v1.5",
     ):
-        self.model = model
-        self.dimensions = dimensions
+        from sentence_transformers import SentenceTransformer
+
+        self.model = model_name
+        self._transformer = SentenceTransformer(model_name)
+        self.dimensions = self._transformer.get_sentence_embedding_dimension()
+        logger.info(
+            "Loaded embedding model %s  (dims=%d)",
+            model_name,
+            self.dimensions,
+        )
 
     def embed_text(self, text):
-        values = [0.0] * self.dimensions
+        # bge-small-en-v1.5 recommends prepending "Represent this sentence: "
+        # for retrieval, but the default encode already normalises well.
+        vector = self._transformer.encode(
+            text,
+            normalize_embeddings=True,
+            show_progress_bar=False,
+        )
+        return vector.tolist()
 
-        for token in text.lower().split():
-            digest = sha256(token.encode("utf-8")).digest()
-            index = int.from_bytes(digest[:4], "big") % self.dimensions
-            sign = 1.0 if digest[4] % 2 == 0 else -1.0
-            values[index] += sign
+    def embed_documents(self, texts):
+        vectors = self._transformer.encode(
+            texts,
+            normalize_embeddings=True,
+            show_progress_bar=False,
+            batch_size=64,
+        )
+        return vectors.tolist()
 
-        norm = math.sqrt(sum(value * value for value in values))
 
-        if not norm:
-            return values
+# ---------------------------------------------------------------------------
+# Singleton so the model is loaded only once per process
+# ---------------------------------------------------------------------------
+_bge_provider_instance = None
 
-        return [
-            value / norm
-            for value in values
-        ]
+
+def _get_bge_singleton():
+    global _bge_provider_instance
+    if _bge_provider_instance is None:
+        _bge_provider_instance = BGEEmbeddingProvider(
+            model_name=settings.embedding_model,
+        )
+    return _bge_provider_instance
 
 
 def get_embedding_provider():
-    if settings.embedding_provider == "deterministic":
-        return DeterministicEmbeddingProvider(
-            model=settings.embedding_model,
-            dimensions=settings.embedding_dimensions,
-        )
+    if settings.embedding_provider == "bge":
+        return _get_bge_singleton()
 
     raise ValueError(
         "Unsupported embedding provider: "

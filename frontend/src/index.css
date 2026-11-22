@@ -1,21 +1,23 @@
 :root {
-  /* Color Palette - Curated Obsidian & Slate Dark Theme */
-  --bg-base: #07090e;
-  --bg-primary: #0b0f19;
-  --bg-surface: #111827;
-  --bg-surface-elevated: #1a2236;
-  --bg-card: rgba(17, 24, 39, 0.72);
-  --bg-card-hover: rgba(26, 34, 54, 0.85);
-  --bg-input: #0e1422;
+  /* Color Palette - Curated Deep Cyber Dark Theme */
+  --bg-base: #06080d;
+  --bg-primary: #0a0e17;
+  --bg-surface: #101623;
+  --bg-surface-elevated: #161f31;
+  --bg-card: rgba(16, 22, 35, 0.72);
+  --bg-card-hover: rgba(22, 31, 49, 0.85);
+  --bg-input: rgba(10, 14, 23, 0.85);
 
   /* Accent Colors */
   --accent-primary: #6366f1;
   --accent-primary-hover: #4f46e5;
   --accent-secondary: #06b6d4;
+  --accent-tertiary: #ec4899;
   --accent-gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
   --accent-gradient-warm: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
-  --accent-glow: rgba(99, 102, 241, 0.28);
-  --accent-cyan-glow: rgba(6, 182, 212, 0.25);
+  --accent-gradient-cyber: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  --accent-glow: rgba(99, 102, 241, 0.35);
+  --accent-cyan-glow: rgba(6, 182, 212, 0.3);
 
   /* Status and Signal Colors */
   --color-success: #10b981;
@@ -51,6 +53,7 @@
   --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.5), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
   --shadow-glow: 0 0 24px -2px var(--accent-glow);
+  --shadow-glass: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 
   /* Fonts */
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -82,7 +85,7 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Atmospheric Background Mesh */
+/* Atmospheric Tech Grid Background */
 body::before {
   content: '';
   position: fixed;
@@ -90,12 +93,34 @@ body::before {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: 
-    radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.09) 0%, transparent 45%),
-    radial-gradient(circle at 85% 25%, rgba(6, 182, 212, 0.07) 0%, transparent 40%),
-    radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
+}
+
+/* Atmospheric Glow Meshes */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: 
+    radial-gradient(circle at 12% 18%, rgba(99, 102, 241, 0.13) 0%, transparent 45%),
+    radial-gradient(circle at 88% 22%, rgba(6, 182, 212, 0.10) 0%, transparent 42%),
+    radial-gradient(circle at 50% 88%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+  animation: ambientFloat 14s ease-in-out infinite alternate;
+}
+
+@keyframes ambientFloat {
+  0% { transform: scale(1) translateY(0); }
+  100% { transform: scale(1.04) translateY(-15px); }
 }
 
 /* Custom Scrollbars */
@@ -126,18 +151,19 @@ a {
 
 /* Keyframe Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulseGlow {
   0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
-  50% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.6); }
+  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.6); }
 }
 
-@keyframes spinSlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes radarPing {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(0.95); opacity: 0; }
 }
 
 @keyframes shimmer {
@@ -145,6 +171,12 @@ a {
   100% { background-position: 200% 0; }
 }
 
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

@@ -1,6 +1,15 @@
 # Environment & Secrets
 .env
 .env.example
+backend/.env
+backend/.env.example
+
+# Python Virtual Environments & Packages
+venv/
+.venv/
+backend/venv/
+ENV/
+env/
 
 # Python Bytecode & Cache
 __pycache__/
@@ -20,6 +29,13 @@ frontend/.env.local
 
 # Uploaded User Documents in Raw Folder
 documents/raw/365*.pdf
+documents/raw/LR-*.pdf
+documents/raw/*.docx
+documents/raw/*.pptx
+documents/raw/Statement_of_Interest.pdf
+
+# Excluded Folders
+photos/
 
 # OS Artifacts
 .DS_Store
